@@ -1,0 +1,3 @@
+%{
+  "inet_cidr": {:hex, :inet_cidr, "1.0.4", "a05744ab7c221ca8e395c926c3919a821eb512e8f36547c062f62c4ca0cf3d6e", [:mix], [], "hexpm"},
+}
