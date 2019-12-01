@@ -2,11 +2,15 @@ defmodule Subnetter do
   @moduledoc """
   Documentation for Subnetter.
   """
-  def get_address_and_mask(ip_address, subnet_mask) do
+  def calculate_subnet_range(ip_address, subnet_mask) do
     binary_ip = dotted_decimal_to_binary(ip_address)
     IO.puts(binary_ip)
     binary_mask = dotted_decimal_to_binary(subnet_mask)
     IO.puts(binary_mask)
+
+    
+
+
   end
 
   def dotted_decimal_to_binary(dotted_decimal) do
@@ -24,8 +28,6 @@ defmodule Subnetter do
     second_octet_binary = make_eight_bits_long(raw_second_octet_binary)
     third_octet_binary = make_eight_bits_long(raw_third_octet_binary)
     fourth_octet_binary = make_eight_bits_long(raw_fourth_octet_binary)
-
-    IO.puts("#{first_octet_binary}, #{second_octet_binary}, #{third_octet_binary}, #{fourth_octet_binary}")
 
     binary_return = "#{first_octet_binary}#{second_octet_binary}#{third_octet_binary}#{fourth_octet_binary}"
   end
