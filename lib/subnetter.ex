@@ -4,13 +4,13 @@ defmodule Subnetter do
   """
   def calculate_subnet_range(ip_address, subnet_mask) do
     binary_ip = dotted_decimal_to_binary(ip_address)
-    IO.puts(binary_ip)
     binary_mask = dotted_decimal_to_binary(subnet_mask)
-    IO.puts(binary_mask)
-
-    
-
-
+    number_of_ones_in_mask = 
+      binary_mask
+      |> String.graphemes 
+      |> Enum.count(& &1 == "1")
+    network_portion_of_ip = String.slice(binary_ip, 1..number_of_ones_in_mask)
+    IO.puts(network_portion_of_ip)
   end
 
   def dotted_decimal_to_binary(dotted_decimal) do
