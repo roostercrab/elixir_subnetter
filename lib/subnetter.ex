@@ -13,15 +13,18 @@ defmodule Subnetter do
     zeroes_for_subnet_address = List.duplicate("0", 32 - number_of_ones_in_mask)
     ones_for_broadcast_address = List.duplicate("1", 32 - number_of_ones_in_mask)
     
-    flattened_zeroes_for_subnet_address = List.flatten(zeroes_for_subnet_address)
-    flattened_ones_for_broadcast_address = List.flatten(ones_for_broadcast_address)
+    binary_subnet_address = "#{network_portion_of_ip}#{zeroes_for_subnet_address}"
+    binary_broadcast_address = "#{network_portion_of_ip}#{ones_for_broadcast_address}"
 
-    IO.inspect(network_portion_of_ip)
-    IO.inspect(flattened_zeroes_for_subnet_address)
-    IO.inspect(flattened_ones_for_broadcast_address)
 
-    # subnet_address = network_portion_of_ip ++ flattened_zeroes_for_subnet_address
-    # broadcast_address = network_portion_of_ip ++ flattened_ones_for_broadcast_address
+    split_binary_subnet_address = String.splitter(binary_subnet_address)
+
+    IO.puts("binary_subnet_address: #{binary_subnet_address}")
+    IO.inspect(binary_subnet_address)
+
+    # {subnet_first_octet, subnet_second_octet, subnet_third_octet, subnet_fourth_octet}
+
+    {ip_address, subnet_mask, binary_subnet_address, binary_broadcast_address}
   end
 
   def dotted_decimal_to_binary(dotted_decimal) do
