@@ -5,7 +5,7 @@ defmodule SubnetterRefactor do
   def main(ip_address, subnet_mask) do
     break_up_dotted_decimal(ip_address, subnet_mask)
     |> convert_decimal_to_binary
-    
+    |> ensure_8_bit_length
     # |> measure_network_portion
     # |> calculate_subnet_range
     # |> convert_binary_to_dotted_decimal
@@ -31,7 +31,22 @@ defmodule SubnetterRefactor do
       for octet <- integer_list do
         Integer.to_string(octet, 2)
       end
+  end
 
-    IO.inspect(bin_list)
+  def ensure_8_bit_length(bin_list) do
+    prepared_list =
+      for octet <- bin_list do
+        number_of_bits = String.length(octet)
+        needed_zeroes = 8 - number_of_bits
+
+        cond do
+          needed_zeroes == 0 ->
+            octet
+
+          needed_zeroes >= 1 ->
+            zeroes = List.duplicate("0", needed_zeroes)
+            "#{zeroes ++ octet}"
+        end
+      end
   end
 end
