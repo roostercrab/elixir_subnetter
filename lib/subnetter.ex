@@ -26,12 +26,6 @@ defmodule Subnetter do
     {ip_address, subnet_mask, binary_subnet_address, binary_broadcast_address, dotted_decimal_subnet_address, dotted_decimal_broadcast_address}
   end
 
-  def binary_string_to_dotted_decimal(binary_string) do
-    for <<chunk::binary-size(8) <- binary_string>> do
-      String.to_integer(chunk, 2)
-    end
-  end
-
   def dotted_decimal_to_binary(dotted_decimal) do
     string_dotted_decimal_with_new_line = to_string(dotted_decimal)
     string_dotted_decimal = String.trim(string_dotted_decimal_with_new_line, "\n")
@@ -56,5 +50,11 @@ defmodule Subnetter do
     needed_zeroes = 8 - number_of_bits
     zeroes = List.duplicate("0", needed_zeroes)
     zeroes ++ binary
+  end
+
+  def binary_string_to_dotted_decimal(binary_string) do
+    for <<chunk::binary-size(8) <- binary_string>> do
+      String.to_integer(chunk, 2)
+    end
   end
 end
