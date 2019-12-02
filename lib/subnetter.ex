@@ -18,20 +18,15 @@ defmodule Subnetter do
     binary_subnet_address = "#{network_portion_of_ip}#{zeroes_for_subnet_address}"
     binary_broadcast_address = "#{network_portion_of_ip}#{ones_for_broadcast_address}"
 
-    dotted_decimal_subnet_address = convert_binary_string_to_dotted_decimal(binary_subnet_address)
+    dotted_decimal_subnet_address = binary_string_to_dotted_decimal(binary_subnet_address)
 
     dotted_decimal_broadcast_address =
-      convert_binary_string_to_dotted_decimal(binary_broadcast_address)
-
-    IO.puts("dotted_decimal_subnet_address: #{dotted_decimal_subnet_address}")
-    IO.inspect(dotted_decimal_subnet_address)
-    IO.puts("dotted_decimal_broadcast_address: #{dotted_decimal_broadcast_address}")
-    IO.inspect(dotted_decimal_broadcast_address)
+      binary_string_to_dotted_decimal(binary_broadcast_address)
 
     {ip_address, subnet_mask, binary_subnet_address, binary_broadcast_address, dotted_decimal_subnet_address, dotted_decimal_broadcast_address}
   end
 
-  def convert_binary_string_to_dotted_decimal(binary_string) do
+  def binary_string_to_dotted_decimal(binary_string) do
     for <<chunk::binary-size(8) <- binary_string>> do
       String.to_integer(chunk, 2)
     end
@@ -60,6 +55,6 @@ defmodule Subnetter do
     number_of_bits = String.length(binary)
     needed_zeroes = 8 - number_of_bits
     zeroes = List.duplicate("0", needed_zeroes)
-    eight_bits = zeroes ++ binary
+    zeroes ++ binary
   end
 end
