@@ -16,8 +16,12 @@ defmodule Subnetter do
     flattened_zeroes_for_subnet_address = List.flatten(zeroes_for_subnet_address)
     flattened_ones_for_broadcast_address = List.flatten(ones_for_broadcast_address)
 
-    subnet_address = network_portion_of_ip ++ flattened_zeroes_for_subnet_address
-    broadcast_address = network_portion_of_ip ++ flattened_ones_for_broadcast_address
+    IO.inspect(network_portion_of_ip)
+    IO.inspect(flattened_zeroes_for_subnet_address)
+    IO.inspect(flattened_ones_for_broadcast_address)
+
+    # subnet_address = network_portion_of_ip ++ flattened_zeroes_for_subnet_address
+    # broadcast_address = network_portion_of_ip ++ flattened_ones_for_broadcast_address
   end
 
   def dotted_decimal_to_binary(dotted_decimal) do
