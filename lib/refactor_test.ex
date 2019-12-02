@@ -49,7 +49,6 @@ defmodule SubnetterRefactor do
   end
 
   def measure_network_range(binary_prepared_list) do
-    IO.inspect(binary_prepared_list)
 
     [
       first_ip_octet_binary,
@@ -99,7 +98,11 @@ defmodule SubnetterRefactor do
       first_mask_octet_binary,
       second_mask_octet_binary,
       third_mask_octet_binary,
-      fourth_mask_octet_binary
+      fourth_mask_octet_binary,
+      number_of_ones_in_mask,
+      network_portion_of_ip,
+      "#{zeroes_for_subnet_address}",
+      "#{ones_for_broadcast_address}"
     ]
   end
 
