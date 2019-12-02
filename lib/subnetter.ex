@@ -2,6 +2,10 @@ defmodule Subnetter do
   @moduledoc """
   Documentation for Subnetter.
   """
+  def main do
+    
+  end
+  
   def calculate_subnet_range(ip_address, subnet_mask) do
     binary_ip = dotted_decimal_to_binary(ip_address)
     binary_mask = dotted_decimal_to_binary(subnet_mask)
