@@ -5,26 +5,36 @@ defmodule Subnetter do
   def calculate_subnet_range(ip_address, subnet_mask) do
     binary_ip = dotted_decimal_to_binary(ip_address)
     binary_mask = dotted_decimal_to_binary(subnet_mask)
-    number_of_ones_in_mask = 
+
+    number_of_ones_in_mask =
       binary_mask
-      |> String.graphemes 
-      |> Enum.count(& &1 == "1")
+      |> String.graphemes()
+      |> Enum.count(&(&1 == "1"))
+
     network_portion_of_ip = String.slice(binary_ip, 0..(number_of_ones_in_mask - 1))
     zeroes_for_subnet_address = List.duplicate("0", 32 - number_of_ones_in_mask)
     ones_for_broadcast_address = List.duplicate("1", 32 - number_of_ones_in_mask)
-    
+
     binary_subnet_address = "#{network_portion_of_ip}#{zeroes_for_subnet_address}"
     binary_broadcast_address = "#{network_portion_of_ip}#{ones_for_broadcast_address}"
 
+    dotted_decimal_subnet_address = convert_binary_string_to_dotted_decimal(binary_subnet_address)
 
-    split_binary_subnet_address = String.splitter(binary_subnet_address)
+    dotted_decimal_broadcast_address =
+      convert_binary_string_to_dotted_decimal(binary_broadcast_address)
 
-    IO.puts("binary_subnet_address: #{binary_subnet_address}")
-    IO.inspect(binary_subnet_address)
+    IO.puts("dotted_decimal_subnet_address: #{dotted_decimal_subnet_address}")
+    IO.inspect(dotted_decimal_subnet_address)
+    IO.puts("dotted_decimal_broadcast_address: #{dotted_decimal_broadcast_address}")
+    IO.inspect(dotted_decimal_broadcast_address)
 
-    # {subnet_first_octet, subnet_second_octet, subnet_third_octet, subnet_fourth_octet}
+    {ip_address, subnet_mask, binary_subnet_address, binary_broadcast_address, dotted_decimal_subnet_address, dotted_decimal_broadcast_address}
+  end
 
-    {ip_address, subnet_mask, binary_subnet_address, binary_broadcast_address}
+  def convert_binary_string_to_dotted_decimal(binary_string) do
+    for <<chunk::binary-size(8) <- binary_string>> do
+      String.to_integer(chunk, 2)
+    end
   end
 
   def dotted_decimal_to_binary(dotted_decimal) do
@@ -37,7 +47,7 @@ defmodule Subnetter do
     raw_second_octet_binary = Integer.to_string(second_octet, 2)
     raw_third_octet_binary = Integer.to_string(third_octet, 2)
     raw_fourth_octet_binary = Integer.to_string(fourth_octet, 2)
-    
+
     first_octet_binary = make_eight_bits_long(raw_first_octet_binary)
     second_octet_binary = make_eight_bits_long(raw_second_octet_binary)
     third_octet_binary = make_eight_bits_long(raw_third_octet_binary)
@@ -51,6 +61,5 @@ defmodule Subnetter do
     needed_zeroes = 8 - number_of_bits
     zeroes = List.duplicate("0", needed_zeroes)
     eight_bits = zeroes ++ binary
-    
   end
 end
