@@ -9,31 +9,31 @@ defmodule SubnetterRefactor do
     |> measure_network_range
   end
 
-  def break_up_dotted_decimal(ip_address, subnet_mask) do
-    ip_address_list = String.split(ip_address, ".")
-    [ip_octet_1, ip_octet_2, ip_octet_3, ip_octet_4] = ip_address_list
+  def break_up_dotted_decimal(original_ip_address, original_subnet_mask) do
+    original_ip_address_list = String.split(original_ip_address, ".")
+    [ip_octet_1, ip_octet_2, ip_octet_3, ip_octet_4] = original_ip_address_list
 
-    subnet_mask_list = String.split(subnet_mask, ".")
-    [mask_octet_1, mask_octet_2, mask_octet_3, mask_octet_4] = subnet_mask_list
+    original_subnet_mask_list = String.split(original_subnet_mask, ".")
+    [mask_octet_1, mask_octet_2, mask_octet_3, mask_octet_4] = original_subnet_mask_list
 
-    ip_address_list ++ subnet_mask_list
+    original_ip_address_list ++ original_subnet_mask_list
   end
 
-  def convert_decimal_to_binary(combined_list) do
+  def convert_decimal_to_binary(original_ip_and_mask_list) do
     integer_list =
-      for octet <- combined_list do
+      for octet <- original_ip_and_mask_list do
         String.to_integer(octet, 10)
       end
 
-    bin_list =
+    binary_list =
       for octet <- integer_list do
         Integer.to_string(octet, 2)
       end
   end
 
-  def ensure_8_bit_length(bin_list) do
+  def ensure_8_bit_length(binary_list) do
     binary_prepared_list =
-      for octet <- bin_list do
+      for octet <- binary_list do
         number_of_bits = String.length(octet)
         needed_zeroes = 8 - number_of_bits
 
