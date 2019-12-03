@@ -1,54 +1,56 @@
-defmodule SubnetterRefactor do
+defmodule SubnetterRefactorWithStruct do
   @moduledoc """
   Documentation for Subnetter.
   """
-  def main(ip_address, subnet_mask, %IPStruct{}) do
-    break_up_dotted_decimal(ip_address, subnet_mask, %IPStruct{})
+  def main(original_ip_address, original_subnet_mask) do
+    break_up_dotted_decimal(original_ip_address, original_subnet_mask, ip_struct = %IPStruct{})
     |> convert_decimal_to_binary
     |> measure_network_range
   end
 
   def break_up_dotted_decimal(original_ip_address, original_subnet_mask, ip_struct = %IPStruct{}) do
     original_ip_address_list = String.split(original_ip_address, ".")
-
-    [
-      first_ip_octet_decimal,
-      second_ip_octet_decimal,
-      third_ip_octet_decimal,
-      fourth_ip_octet_decimal
-    ] = original_ip_address_list
-
     original_subnet_mask_list = String.split(original_subnet_mask, ".")
-    [first_mask_octet_decimal, second_mask_octet_decimal, third_mask_octet_decimal, fourth_mask_octet_decimal] = original_subnet_mask_list
 
-    ip_struct
-    |> Map.put(
-      first_ip_octet_decimal: first_ip_octet_decimal,
-      second_ip_octet_decimal: second_ip_octet_decimal,
-      third_ip_octet_decimal: third_ip_octet_decimal,
-      fourth_ip_octet_decimal: fourth_ip_octet_decimal,
-      first_mask_octet_decimal: first_mask_octet_decimal,
-      second_mask_octet_decimal: second_mask_octet_decimal,
-      third_mask_octet_decimal: third_mask_octet_decimal,
-      fourth_mask_octet_decimal: fourth_mask_octet_decimal,
-      original_ip_address_list: original_ip_address_list,
-      original_subnet_mask_list: original_subnet_mask_list
-    )
+    %{
+      ip_struct
+      | original_ip_address: original_ip_address,
+        original_subnet_mask: original_subnet_mask,
+        original_ip_address_list: original_ip_address_list,
+        original_subnet_mask_list: original_subnet_mask_list
+    }
   end
 
   def convert_decimal_to_binary(ip_struct = %IPStruct{}) do
-    ip_integer_list =
+    original_ip_integer_list =
       for octet <- ip_struct.original_ip_address_list do
         String.to_integer(octet, 10)
       end
 
-    ip_binary_list_maybe_not_32_bits =
-      for octet <- ip_integer_list do
+    original_ip_binary_list_maybe_not_32_bits =
+      for octet <- original_ip_integer_list do
         Integer.to_string(octet, 2)
       end
 
-    ip_binary_list_32_bits = 
-      ensure_8_bit_length(ip_binary_list_maybe_not_32_bits)
+    original_ip_binary_list = ensure_8_bit_length(original_ip_binary_list_maybe_not_32_bits)
+
+    original_mask_integer_list =
+      for octet <- ip_struct.original_subnet_mask_list do
+        String.to_integer(octet, 10)
+      end
+
+    original_mask_binary_list_maybe_not_32_bits =
+      for octet <- original_mask_integer_list do
+        Integer.to_string(octet, 2)
+      end
+
+    original_mask_binary_list = ensure_8_bit_length(original_mask_binary_list_maybe_not_32_bits)
+
+    %{
+      ip_struct
+      | original_ip_binary_list: original_ip_binary_list,
+        original_mask_binary_list: original_mask_binary_list
+    }
   end
 
   defp ensure_8_bit_length(binary_list) do
@@ -68,17 +70,22 @@ defmodule SubnetterRefactor do
       end
   end
 
-  def measure_network_range(binary_prepared_list) do
+  def measure_network_range(ip_struct = %IPStruct{}) do
+    IO.inspect(ip_struct, label: "struct inspect")
+
     [
       first_ip_octet_binary,
       second_ip_octet_binary,
       third_ip_octet_binary,
-      fourth_ip_octet_binary,
+      fourth_ip_octet_binary
+    ] = ip_struct.original_ip_binary_list
+
+    [
       first_mask_octet_binary,
       second_mask_octet_binary,
       third_mask_octet_binary,
       fourth_mask_octet_binary
-    ] = binary_prepared_list
+    ] = ip_struct.original_mask_binary_list
 
     combined_bin_ip =
       "#{first_ip_octet_binary}#{second_ip_octet_binary}#{third_ip_octet_binary}#{
@@ -105,24 +112,7 @@ defmodule SubnetterRefactor do
     dotted_decimal_subnet_address = binary_string_to_dotted_decimal(binary_subnet_address)
     dotted_decimal_broadcast_address = binary_string_to_dotted_decimal(binary_broadcast_address)
 
-    [
-      binary_subnet_address,
-      dotted_decimal_subnet_address,
-      binary_broadcast_address,
-      dotted_decimal_broadcast_address,
-      first_ip_octet_binary,
-      second_ip_octet_binary,
-      third_ip_octet_binary,
-      fourth_ip_octet_binary,
-      first_mask_octet_binary,
-      second_mask_octet_binary,
-      third_mask_octet_binary,
-      fourth_mask_octet_binary,
-      number_of_ones_in_mask,
-      network_portion_of_ip,
-      "#{zeroes_for_subnet_address}",
-      "#{ones_for_broadcast_address}"
-    ]
+    %{ip_struct | binary_subnet_address: binary_subnet_address, dotted_decimal_subnet_address: dotted_decimal_subnet_address, binary_broadcast_address: binary_broadcast_address, dotted_decimal_broadcast_address: dotted_decimal_broadcast_address, number_of_ones_in_mask: number_of_ones_in_mask, network_portion_of_ip: network_portion_of_ip, zeroes_for_subnet_address: zeroes_for_subnet_address, ones_for_broadcast_address: ones_for_broadcast_address}
   end
 
   defp binary_string_to_dotted_decimal(binary_string) do
