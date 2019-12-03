@@ -2,36 +2,56 @@ defmodule SubnetterRefactor do
   @moduledoc """
   Documentation for Subnetter.
   """
-  def main(ip_address, subnet_mask) do
-    break_up_dotted_decimal(ip_address, subnet_mask)
+  def main(ip_address, subnet_mask, %IPStruct{}) do
+    break_up_dotted_decimal(ip_address, subnet_mask, %IPStruct{})
     |> convert_decimal_to_binary
-    |> ensure_8_bit_length
     |> measure_network_range
   end
 
-  def break_up_dotted_decimal(original_ip_address, original_subnet_mask) do
+  def break_up_dotted_decimal(original_ip_address, original_subnet_mask, ip_struct = %IPStruct{}) do
     original_ip_address_list = String.split(original_ip_address, ".")
-    [ip_octet_1, ip_octet_2, ip_octet_3, ip_octet_4] = original_ip_address_list
+
+    [
+      first_ip_octet_decimal,
+      second_ip_octet_decimal,
+      third_ip_octet_decimal,
+      fourth_ip_octet_decimal
+    ] = original_ip_address_list
 
     original_subnet_mask_list = String.split(original_subnet_mask, ".")
-    [mask_octet_1, mask_octet_2, mask_octet_3, mask_octet_4] = original_subnet_mask_list
+    [first_mask_octet_decimal, second_mask_octet_decimal, third_mask_octet_decimal, fourth_mask_octet_decimal] = original_subnet_mask_list
 
-    original_ip_address_list ++ original_subnet_mask_list
+    ip_struct
+    |> Map.put(
+      first_ip_octet_decimal: first_ip_octet_decimal,
+      second_ip_octet_decimal: second_ip_octet_decimal,
+      third_ip_octet_decimal: third_ip_octet_decimal,
+      fourth_ip_octet_decimal: fourth_ip_octet_decimal,
+      first_mask_octet_decimal: first_mask_octet_decimal,
+      second_mask_octet_decimal: second_mask_octet_decimal,
+      third_mask_octet_decimal: third_mask_octet_decimal,
+      fourth_mask_octet_decimal: fourth_mask_octet_decimal,
+      original_ip_address_list: original_ip_address_list,
+      original_subnet_mask_list: original_subnet_mask_list
+    )
   end
 
-  def convert_decimal_to_binary(original_ip_and_mask_list) do
-    integer_list =
-      for octet <- original_ip_and_mask_list do
+  def convert_decimal_to_binary(ip_struct = %IPStruct{}) do
+    ip_integer_list =
+      for octet <- ip_struct.original_ip_address_list do
         String.to_integer(octet, 10)
       end
 
-    binary_list =
-      for octet <- integer_list do
+    ip_binary_list_maybe_not_32_bits =
+      for octet <- ip_integer_list do
         Integer.to_string(octet, 2)
       end
+
+    ip_binary_list_32_bits = 
+      ensure_8_bit_length(ip_binary_list_maybe_not_32_bits)
   end
 
-  def ensure_8_bit_length(binary_list) do
+  defp ensure_8_bit_length(binary_list) do
     binary_prepared_list =
       for octet <- binary_list do
         number_of_bits = String.length(octet)
