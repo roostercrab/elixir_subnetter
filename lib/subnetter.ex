@@ -70,8 +70,6 @@ defmodule Subnetter do
   end
 
   def measure_network_range(ip_struct = %IPStruct{}) do
-    IO.inspect(ip_struct, label: "struct inspect")
-
     [
       first_ip_octet_binary,
       second_ip_octet_binary,
